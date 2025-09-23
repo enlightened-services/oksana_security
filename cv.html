@@ -683,31 +683,10 @@
     </div>
 
     <script>
-        // Print functionality
+        // Print functionality (Ctrl+P or Cmd+P)
         function printCV() {
             window.print();
         }
-
-        // Add print button (optional)
-        document.addEventListener('DOMContentLoaded', function() {
-            const printButton = document.createElement('button');
-            printButton.innerHTML = '<i class="fas fa-print"></i> Print CV';
-            printButton.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--primary-color);
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                font-family: 'Inter', sans-serif;
-                z-index: 1000;
-            `;
-            printButton.onclick = printCV;
-            document.body.appendChild(printButton);
-        });
     </script>
 </body>
 </html>

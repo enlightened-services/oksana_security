@@ -1421,7 +1421,17 @@
         </div>
     </footer>
 
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
     <script>
+        // Initialize EmailJS
+        (function(){
+            emailjs.init({
+                publicKey: "YOUR_PUBLIC_KEY", // Replace with your EmailJS public key
+            });
+        })();
+
         // Mobile menu toggle
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
         const navMenu = document.getElementById('nav-menu');
@@ -1468,62 +1478,60 @@
             });
         });
 
-        // Contact Form Handler
+        // Contact Form Handler with EmailJS
         document.getElementById('contact-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const statusDiv = document.getElementById('form-status');
             const submitBtn = this.querySelector('button[type="submit"]');
-            
+
             // Show loading state
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Versturen...';
             submitBtn.disabled = true;
-            
-            // Simulate form submission (replace with actual email service)
-            setTimeout(() => {
-                // For now, we'll use a simple mailto approach
-                const name = formData.get('name');
-                const email = formData.get('email');
-                const phone = formData.get('phone');
-                const company = formData.get('company');
-                const subject = formData.get('subject');
-                const message = formData.get('message');
-                
-                const emailBody = `
-Naam: ${name}
-Email: ${email}
-Telefoon: ${phone || 'Niet opgegeven'}
-Bedrijf: ${company || 'Niet opgegeven'}
-Onderwerp: ${subject}
+            statusDiv.style.display = 'none';
 
-Bericht:
-${message}
-                `.trim();
-                
-                const mailtoLink = `mailto:oksana.hofker@gmail.com?subject=Contact via Website - ${subject}&body=${encodeURIComponent(emailBody)}`;
-                
-                // Open email client
-                window.location.href = mailtoLink;
-                
-                // Show success message
-                statusDiv.className = 'form-status success';
-                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Uw email client wordt geopend. Verstuur het bericht om contact op te nemen.';
-                statusDiv.style.display = 'block';
-                
-                // Reset form
-                this.reset();
-                
-                // Reset button
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Verstuur Bericht';
-                submitBtn.disabled = false;
-                
-                // Hide status after 5 seconds
-                setTimeout(() => {
-                    statusDiv.style.display = 'none';
-                }, 5000);
-                
-            }, 1000);
+            // Prepare template parameters
+            const templateParams = {
+                from_name: formData.get('name'),
+                from_email: formData.get('email'),
+                phone: formData.get('phone') || 'Niet opgegeven',
+                company: formData.get('company') || 'Niet opgegeven',
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                to_email: 'oksana.hofker@gmail.com'
+            };
+
+            // Send email via EmailJS
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+                .then(function(response) {
+                    // Show success message
+                    statusDiv.className = 'form-status success';
+                    statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Uw bericht is succesvol verzonden! We nemen spoedig contact met u op.';
+                    statusDiv.style.display = 'block';
+
+                    // Reset form
+                    document.getElementById('contact-form').reset();
+
+                    console.log('Email sent successfully:', response.status, response.text);
+                }, function(error) {
+                    // Show error message
+                    statusDiv.className = 'form-status error';
+                    statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Er is een fout opgetreden bij het verzenden. Probeer het opnieuw of bel direct.';
+                    statusDiv.style.display = 'block';
+
+                    console.error('EmailJS error:', error);
+                })
+                .finally(function() {
+                    // Reset button
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Verstuur Bericht';
+                    submitBtn.disabled = false;
+
+                    // Hide status after 8 seconds
+                    setTimeout(() => {
+                        statusDiv.style.display = 'none';
+                    }, 8000);
+                });
         });
 
         // Add fade-in animation on scroll

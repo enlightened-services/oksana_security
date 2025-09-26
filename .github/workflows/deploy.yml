@@ -1,0 +1,14 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: enlightened-services/infra/.github/workflows/reusable-deploy.yml@main
+    with:
+      service: "oksana-security-app"
+      compose_dir: "/home/herbrand/enlightened/nginx"
+    secrets: inherit
